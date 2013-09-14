@@ -17,10 +17,12 @@
 #
 
 
+import os
 import notmuch
 import logging
 from shutil import move
 from subprocess import check_call, CalledProcessError
+from mailbox import Maildir
 
 from .Database import Database
 from .utils import get_message_summary, mkdirp
@@ -53,14 +55,17 @@ class MailMover(Database):
         # identify and move messages
         logging.info("checking mails in '{}'".format(maildir))
         for query in rules.keys():
-            destination = '{}/{}/cur/'.format(self.db_path, rules[query])
+            destination_dir = '{}/{}'.format(self.db_path, rules[query])
+            destination = os.path.join(destination_dir, 'cur')
             main_query = self.query.format(folder=maildir, subquery=query)
             logging.debug("query: {}".format(main_query))
             messages = notmuch.Query(self.db, main_query).search_messages()
             for message in messages:
                 if not self.dry_run:
+                    if not os.path.exists(destination_dir):
+                        Maildir(destination_dir)
                     self.__log_move_action(message, maildir, rules[query], self.dry_run)
-                    move(message.get_filename(), mkdirp(destination))
+                    move(message.get_filename(), destination)
                 else:
                     self.__log_move_action(message, maildir, rules[query], self.dry_run)
 
