@@ -23,7 +23,7 @@ from shutil import move
 from subprocess import check_call, CalledProcessError
 
 from .Database import Database
-from .utils import get_message_summary
+from .utils import get_message_summary, mkdirp
 from datetime import date, datetime, timedelta
 
 
@@ -60,7 +60,7 @@ class MailMover(Database):
             for message in messages:
                 if not self.dry_run:
                     self.__log_move_action(message, maildir, rules[query], self.dry_run)
-                    move(message.get_filename(), destination)
+                    move(message.get_filename(), mkdirp(destination))
                 else:
                     self.__log_move_action(message, maildir, rules[query], self.dry_run)
 

@@ -17,6 +17,8 @@ from __future__ import print_function, absolute_import, unicode_literals
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
+import os
+import errno
 import codecs
 import re
 import sys
@@ -136,3 +138,13 @@ def get_sender(message):
     if name_match:
         sender = name_match.group(1)
     return sender
+
+def mkdirp(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc: # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else: raise
+    finally:
+        return path
