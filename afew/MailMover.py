@@ -25,7 +25,7 @@ from subprocess import check_call, CalledProcessError
 from mailbox import Maildir
 
 from .Database import Database
-from .utils import get_message_summary, mkdirp
+from .utils import get_message_summary
 from datetime import date, datetime, timedelta
 
 
